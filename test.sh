@@ -1,0 +1,1 @@
+make debug && ./kvdb -t 16
