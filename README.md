@@ -15,6 +15,17 @@ An easy key-value database written in `C/C++` language.
 - `DUMP`: Dump all kvpair in an array.
 - `SHUT`: Close current TCP connection.
 
+In `kvdb.h`:
+
+#define OPCODE_ADD "ADD"
+#define OPCODE_DELETE "DEL"
+#define OPCODE_MODIFY "MDF"
+#define OPCODE_RENAME "RNM"
+#define OPCODE_COPY "CPY"
+#define OPCODE_GET "GET"
+#define OPCODE_DUMP "DUMP"
+#define OPCODE_SHUTDOWN "SHUT"
+
 ## Protocol (TCP)
 
 > In big endian
