@@ -17,6 +17,7 @@ An easy key-value database written in `C/C++` language.
 
 In `kvdb.h`:
 
+```c
 #define OPCODE_ADD "ADD"
 #define OPCODE_DELETE "DEL"
 #define OPCODE_MODIFY "MDF"
@@ -25,6 +26,7 @@ In `kvdb.h`:
 #define OPCODE_GET "GET"
 #define OPCODE_DUMP "DUMP"
 #define OPCODE_SHUTDOWN "SHUT"
+```
 
 ## Protocol (TCP)
 
