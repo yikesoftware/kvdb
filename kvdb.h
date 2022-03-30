@@ -118,7 +118,7 @@ extern void signal_handler(int);
 /* IO */
 
 extern uint32 readn(int stream, char* buffer, uint32 maxlen);
-extern unsigned int writen(int stream, char* buffer, int maxlen);
+extern unsigned int writen(int stream, char* buffer, uint32 maxlen);
 extern data_t* read_data_t(int sock);
 extern data_t* do_read_data_t(int sock, int level);
 extern void resp_str(int sock, const char* str);

@@ -4,7 +4,6 @@
  * Author: Eqqie
  * Version: 0.0.1
  ************************************************/
-// g++ kvdb.cpp -D DEBUG -o kvdb && ./kvdb
 #include "kvdb.h"
 
 uint32 socks_server_port = 9999;

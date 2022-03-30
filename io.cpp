@@ -8,7 +8,7 @@
  * @return count
  */
 uint32 readn(int stream, char* buffer, uint32 maxlen) {
-    unsigned int total = 0;
+    uint32 total = 0;
     int rn = 0;
     while (total < maxlen) {
         if ((rn = read(stream, buffer + total, maxlen - total)) < 0) {
@@ -27,8 +27,8 @@ uint32 readn(int stream, char* buffer, uint32 maxlen) {
  * @param (maxlen) int maxlen
  * @return count
  */
-unsigned int writen(int stream, char* buffer, int maxlen) {
-    unsigned int total = 0;
+unsigned int writen(int stream, char* buffer, uint32 maxlen) {
+    uint32 total = 0;
     int wn = 0;
     while (total < maxlen) {
         if ((wn = write(stream, buffer + total, maxlen - total)) < 0) {
@@ -90,7 +90,7 @@ void internal_do_resp(int sock, data_t* resp_data, int level) {
             count_be = BigLittleSwap32(resp_data->array.count);
             writen(sock, (char*)&type_be, sizeof(uint16));
             writen(sock, (char*)&count_be, sizeof(uint32));
-            for (int i = 0; i < resp_data->array.count; i++) {
+            for (uint32 i = 0; i < resp_data->array.count; i++) {
                 internal_do_resp(sock, resp_data->array.items[i], level+1);
             }
             return;
@@ -217,11 +217,11 @@ data_t* do_read_data_t(int sock, int level) {
             }
             fprintf(stderr, "\x1B[107mArray[%d]\x1B[0m:\n", tmp->array.count);
 #endif
-            for (int i = 0; i < count_le; i++) {
+            for (uint32 i = 0; i < count_le; i++) {
                 item = do_read_data_t(sock, level + 1);
                 if (item == NULL) {
                     /* release all received items when error occur */
-                    for (int j = 0; j < i; j++) {
+                    for (uint32 j = 0; j < i; j++) {
                         release_data_t(tmp->array.items[j]);
                         free(tmp->array.items);
                         goto INVALID;

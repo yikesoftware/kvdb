@@ -1,24 +1,28 @@
 SHELL = /bin/sh
-CFLAGS_RELEASE = -O2
-CFLAGS_DEBUG = -g -D DEBUG
-CFLAGS_NOOPT = -O0
+CFLAGS := -Wall
+
 CC = gcc
 CXX = g++
 OBJS = kvdb.o io.o handler.o data_t.o
 
-default:kvdb
 
-kvdb: $(OBJS)
-	$(CXX) $(CFLAGS_RELEASE) -o kvdb $^
+default:release
 
+release: CFLAGS += -O2
+release: $(OBJS)
+	$(CXX) $(CFLAGS) -o kvdb $^
+
+debug: CFLAGS += -g -D DEBUG
 debug: $(OBJS)
-	$(CXX) $(CFLAGS_DEBUG) -o kvdb $^
+	$(CXX) $(CFLAGS) -o kvdb $^
 
+noopt: CFLAGS += -O0
 noopt: $(OBJS)
-	$(CXX) $(CFLAGS_NOOPT) -o kvdb $^
+	$(CXX) $(CFLAGS) -o kvdb $^
 
-%.o: %.c
+%.o: %.cpp
 	$(CXX) $(CFLAGS) -c -o $@ $<
+	
 
 .PHONY:clean
 clean:

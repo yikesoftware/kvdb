@@ -17,7 +17,7 @@ uint32 release_data_t(data_t* data) {
             free(data);
             return 0;
         case DATA_TYPE_ARRAY:
-            for (int i = 0; i < data->array.count; i++) {
+            for (uint32 i = 0; i < data->array.count; i++) {
                 if (release_data_t(data->array.items[i])) {
                     free(data);
                     return ~0;
@@ -63,12 +63,12 @@ data_t* copy_data_t(data_t* data) {
             tmp->array.count = data->array.count;
             tmp->array.items =
                 (data_t**)calloc(data->array.count, sizeof(data_t*));
-            for (int i = 0; i < tmp->array.count; i++) {
+            for (uint32 i = 0; i < tmp->array.count; i++) {
                 new_item = copy_data_t(data->array.items[i]);
                 if (!new_item) {
                     /* Release all array elements that have been created and
                      * return NULL */
-                    for (int j = 0; j < i; j++) {
+                    for (uint32 j = 0; j < i; j++) {
                         release_data_t(tmp->array.items[j]);
                     }
                     free(tmp->array.items);
@@ -90,7 +90,7 @@ data_t* copy_data_t(data_t* data) {
  * @return 0-success other-error
  */
 uint32 compare_data_t(data_t* dst, data_t* src) {
-    int i = 0;
+    uint32 i = 0;
     if (dst == NULL || src == NULL) {
         return 1;
     }
