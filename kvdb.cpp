@@ -206,7 +206,7 @@ int main(int argc, char* argv[]) {
                 std::cerr
                     << "kvdb [-p <port>] [-m <max_clients>] [-t <timeout sec>]"
                     << std::endl;
-                break;
+                exit(0);
             case '?':
                 std::cerr << ("HELP: -h") << std::endl;
                 exit(0);
