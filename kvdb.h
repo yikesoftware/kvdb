@@ -58,6 +58,7 @@ typedef unsigned long long uint64;
 #define OPCODE_COPY "CPY"
 #define OPCODE_GET "GET"
 #define OPCODE_DUMP "DUMP"
+#define OPCODE_CLEAR "CLR"
 #define OPCODE_SHUTDOWN "SHUT"
 #define OPCODE_TREM "\0"
 
@@ -89,8 +90,9 @@ extern uint32 delete_data_item(data_t* key);
 extern uint32 modify_data_item(data_t* key, data_t *new_value);
 extern uint32 rename_data_item(data_t* old_key, data_t *new_key);
 extern uint32 copy_data_item(data_t* src_key, data_t *dst_key);
-extern data_t* get_data_item(data_t* key);
+extern data_t *get_data_item(data_t* key);
 extern data_t *dump_data_item();
+extern uint32 clear_data_item();
 
 /* methods of data_t obj*/
 
@@ -108,6 +110,7 @@ extern uint32 op_handler_RNM(int sock);
 extern uint32 op_handler_CPY(int sock);
 extern uint32 op_handler_GET(int sock);
 extern uint32 op_handler_DUMP(int sock);
+extern uint32 op_handler_CLR(int sock);
 extern uint32 op_handler_SHUT(int sock);
 
 /* signal handlers */

@@ -19,10 +19,12 @@ uint32 release_data_t(data_t* data) {
         case DATA_TYPE_ARRAY:
             for (uint32 i = 0; i < data->array.count; i++) {
                 if (release_data_t(data->array.items[i])) {
+                    free(data->array.items);
                     free(data);
                     return ~0;
                 }
             }
+            free(data->array.items);
             free(data);
             return 0;
         default:
@@ -247,7 +249,7 @@ uint32 copy_data_item(data_t* src_key, data_t* dst_key) {
 }
 
 /**
- * Dump all key-value pair in database.
+ * Dump all key-value pairs in database.
  * @return pointer to array type data_t obj
  */
 data_t *dump_data_item(){
@@ -270,6 +272,19 @@ data_t *dump_data_item(){
         dump_array->array.items[i] = item_array;
     }
     return dump_array;
+}
+
+/**
+ * Delete all key-value pairs in database.
+ * @return 0-success 1-failed
+ */
+uint32 clear_data_item(){
+    std::list<kvpair>::iterator iter;
+    if(database.size() == 0){
+        return 1;
+    }
+    database.clear();
+    return 0;
 }
 
 /**

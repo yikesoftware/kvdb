@@ -23,7 +23,7 @@ static struct op_handler {
     {OPCODE_MODIFY, op_handler_MDF},    {OPCODE_RENAME, op_handler_RNM},
     {OPCODE_COPY, op_handler_CPY},      {OPCODE_GET, op_handler_GET},
     {OPCODE_SHUTDOWN, op_handler_SHUT}, {OPCODE_DUMP, op_handler_DUMP},
-    {OPCODE_TREM, NULL}};
+    {OPCODE_CLEAR, op_handler_CLR}, {OPCODE_TREM, NULL}};
 
 std::list<kvpair> database;
 

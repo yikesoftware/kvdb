@@ -160,14 +160,23 @@ uint32 op_handler_GET(int sock) {
 }
 
 uint32 op_handler_DUMP(int sock){
-    // finishe it
     data_t *dump_array = dump_data_item();
     if(!dump_array){
         resp_str(sock, "Dump Failed");
-    }
+        return 1;
+    };
     do_resp(sock, dump_array);
     /* 如果上面dump_data_item发生浅拷贝那这里可以制造UAF首个Free */
     release_data_t(dump_array);
+    return 0;
+}
+
+uint32 op_handler_CLR(int sock){
+    if(clear_data_item()){
+        resp_str(sock, "Clear Failed");
+        return 1;
+    }
+    resp_str(sock, "Done");
     return 0;
 }
 

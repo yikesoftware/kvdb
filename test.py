@@ -75,6 +75,13 @@ def cmd_dump():
     payload += b"" # payload
     p.send(payload)
 
+def cmd_clr():
+    payload = b"KVDB"
+    payload += struct.pack(b">H", 3) + b"CLR"
+    payload += b"" # payload
+    p.send(payload)
+
+
 def cmd_shut():
     payload = b"KVDB"
     payload += struct.pack(b">H", 4) + b"SHUT"
@@ -109,8 +116,13 @@ array1 = [
 ]
 cmd_add(make_int(0x1111), make_array(len(array1), array1))
 '''
-cmd_add(make_int(0x1111), make_string(b"a"*0x1000))
+cmd_add(make_int(0x1111), make_array(0, []))
 p.recv()
 cmd_get(make_int(0x1111))
 p.recv()
+cmd_del(make_int(0x1111))
+p.recv()
+cmd_get(make_int(0x1111))
+p.recv()
+
 p.interactive()
