@@ -4,7 +4,7 @@ An easy key-value database written in `C/C++` language.
 
 > Just for fun~
 
-## Opcodes
+## 0x00 Opcodes
 
 - `ADD`: Add a new kvpair to database.
 - `DEL`: Delete a kvpair fromm database by `key`.
@@ -28,7 +28,7 @@ In `kvdb.h`:
 #define OPCODE_SHUTDOWN "SHUT"
 ```
 
-## Protocol (TCP)
+## 0x01 Protocol (TCP)
 
 > In big endian
 
@@ -102,7 +102,7 @@ In `kvdb.h`:
 7. DUMP()
 8. SHUT()
 
-## Build
+## 0x02 Build
 
 1. `git clone https://github.com/yikesoftware/kvdb`
 
