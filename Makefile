@@ -5,7 +5,6 @@ CC = gcc
 CXX = g++
 OBJS = kvdb.o io.o handler.o data_t.o
 
-
 default:release
 
 release: CFLAGS += -O2
