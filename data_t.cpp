@@ -1,5 +1,10 @@
 #include "kvdb.h"
 
+/**
+ * Release a data_t obj.
+ * @param (data) data_t* data
+ * @return 0-success other-error
+ */
 uint32 release_data_t(data_t* data) {
     switch (data->type) {
         case DATA_TYPE_EMPTY:
@@ -25,6 +30,11 @@ uint32 release_data_t(data_t* data) {
     }
 };
 
+/**
+ * Return a new data_t obj by deepcopy
+ * @param (data) data_t* data
+ * @return pointer to new data_t obj
+ */
 data_t* copy_data_t(data_t* data) {
     data_t* tmp = (data_t*)calloc(1, sizeof(data_t));
     if (!tmp)
@@ -73,6 +83,12 @@ data_t* copy_data_t(data_t* data) {
     }
 }
 
+/**
+ * Compare two data_t obj
+ * @param (dst) data_t* dst
+ * @param (src) data_t* src
+ * @return 0-success other-error
+ */
 uint32 compare_data_t(data_t* dst, data_t* src) {
     int i = 0;
     if (dst == NULL || src == NULL) {
@@ -110,6 +126,11 @@ uint32 compare_data_t(data_t* dst, data_t* src) {
     }
 }
 
+/**
+ * Construct a string type data_t obj by const char *
+ * @param (str) data_t* str
+ * @return pointer to string type data_t obj
+ */
 data_t* make_string(const char* str) {
     data_t* tmp = (data_t*)calloc(1, sizeof(data_t));
     if (!tmp)
@@ -225,6 +246,10 @@ uint32 copy_data_item(data_t* src_key, data_t* dst_key) {
     return 1;
 }
 
+/**
+ * Dump all key-value pair in database.
+ * @return pointer to array type data_t obj
+ */
 data_t *dump_data_item(){
     data_t *dump_array = (data_t *)calloc(1, sizeof(data_t));
     if(!dump_array) return NULL;

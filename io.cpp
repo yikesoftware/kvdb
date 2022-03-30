@@ -1,5 +1,12 @@
 #include "kvdb.h"
 
+/**
+ * Read N bytes to target stream
+ * @param (stream) int stream
+ * @param (buffer) char* buffer,
+ * @param (maxlen) int maxlen
+ * @return count
+ */
 uint32 readn(int stream, char* buffer, uint32 maxlen) {
     unsigned int total = 0;
     int rn = 0;
@@ -13,6 +20,13 @@ uint32 readn(int stream, char* buffer, uint32 maxlen) {
     return total;
 }
 
+/**
+ * Write N bytes to target stream
+ * @param (stream) int stream
+ * @param (buffer) char* buffer,
+ * @param (maxlen) int maxlen
+ * @return count
+ */
 unsigned int writen(int stream, char* buffer, int maxlen) {
     unsigned int total = 0;
     int wn = 0;
@@ -133,7 +147,6 @@ data_t* do_read_data_t(int sock, int level) {
 
     readn(sock, (char*)&type_be, sizeof(uint16));
     type_le = BigLittleSwap16(type_be);
-    // fprintf(stderr, "[%d] Type: %hu\n", getpid(), type_le);
 
     int l;
 

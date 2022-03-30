@@ -102,6 +102,18 @@ In `kvdb.h`:
 7. DUMP()
 8. SHUT()
 
+## Build
+
+1. `git clone https://github.com/yikesoftware/kvdb`
+
+2. `cd kvdb`
+
+3. make
+   - Release: `make`
+   - Debug: `make debug`
+     - This will show `data_t` construct info and `handler return` in `stderr`.
+   - Disable optimization: `make noopt`
+
 
 
 

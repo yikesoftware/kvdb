@@ -48,8 +48,6 @@ typedef unsigned long long uint64;
 #define DATA_TYPE_ARRAY 0x4
 #define DATA_TYPE_TERM 0xff
 
-#define DEFAULT_CMD_BUF_SIZE 0x100
-
 #define MAGIC_SIZE 4
 #define MAX_OP_SIZE 15
 #define MAGIC "KVDB"
