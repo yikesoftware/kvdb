@@ -267,8 +267,10 @@ data_t *dump_data_item(){
         item_array->array.count = 2;
         item_array->array.items = (data_t **)calloc(2, sizeof(data_t *));
         /* 这里可以写成浅拷贝，caller拿到返回值后free一下就可以制造UAF漏洞！ */
-        item_array->array.items[0] = copy_data_t(iter->first.get_data_t());
-        item_array->array.items[1] = copy_data_t(iter->second.get_data_t());
+        //item_array->array.items[0] = copy_data_t(iter->first.get_data_t());
+        //item_array->array.items[1] = copy_data_t(iter->second.get_data_t());
+        item_array->array.items[0] = iter->first.get_data_t();
+        item_array->array.items[1] = iter->second.get_data_t();
         dump_array->array.items[i] = item_array;
     }
     return dump_array;
