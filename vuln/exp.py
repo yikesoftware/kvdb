@@ -97,16 +97,12 @@ def cmd_xxx():
 
 
 cmd_add(make_int(0x1111), make_string(b"a"*0x30))
-p.recv()
-pause()
+p.interactive()
 cmd_get(make_int(0x1111))
-p.recv()
+p.interactive()
 pause()
 cmd_dump()
-p.recv()
 pause()
+p.interactive()
 cmd_get(make_int(0x1111))
-p.recv()
-pause()
-
 p.interactive()

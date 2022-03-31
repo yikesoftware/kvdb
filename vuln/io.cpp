@@ -60,7 +60,7 @@ void internal_do_resp(int sock, data_t* resp_data, int level) {
     uint32 count_be = 0;
 
     if (!resp_data){
-        // write empty obj for null
+        // write empty data_t obj for null
         writen(sock, (char*)MAGIC, MAGIC_SIZE);
         type_be = BigLittleSwap16(DATA_TYPE_EMPTY);
         writen(sock, (char*)&type_be, sizeof(uint16));
@@ -103,7 +103,9 @@ void internal_do_resp(int sock, data_t* resp_data, int level) {
             writen(sock, (char*)&type_be, sizeof(uint16));
             return;
         default:
-            resp_str(sock, "Unknown error!");
+            // write empty data_t obj for err type
+            type_be = BigLittleSwap16(DATA_TYPE_EMPTY);
+            writen(sock, (char*)&type_be, sizeof(uint16));
             return;
     }
 }
@@ -116,7 +118,9 @@ void internal_do_resp(int sock, data_t* resp_data, int level) {
  * @return non-return
  */
 void resp_str(int sock, const char* str) {
-    do_resp(sock, make_string(str));
+    data_t *str_obj = make_string(str);
+    do_resp(sock, str_obj);
+    release_data_t(str_obj);
 }
 
 /**

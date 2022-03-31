@@ -116,7 +116,9 @@ void internal_do_resp(int sock, data_t* resp_data, int level) {
  * @return non-return
  */
 void resp_str(int sock, const char* str) {
-    do_resp(sock, make_string(str));
+    data_t *str_obj = make_string(str);
+    do_resp(sock, str_obj);
+    release_data_t(str_obj);
 }
 
 /**

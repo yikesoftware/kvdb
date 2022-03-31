@@ -1,5 +1,5 @@
 SHELL = /bin/sh
-CFLAGS := -Wall
+CFLAGS := 
 
 CC = gcc
 CXX = g++
