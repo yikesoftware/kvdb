@@ -25,6 +25,7 @@ In `kvdb.h`:
 #define OPCODE_COPY "CPY"
 #define OPCODE_GET "GET"
 #define OPCODE_DUMP "DUMP"
+#define OPCODE_CLEAR "CLR"
 #define OPCODE_SHUTDOWN "SHUT"
 ```
 
@@ -100,7 +101,8 @@ In `kvdb.h`:
 5. CPY(SRC_KEY, DST, KEY)
 6. GET(KEY)
 7. DUMP()
-8. SHUT()
+8. CLR()
+9. SHUT()
 
 ## 0x02 Build
 
@@ -111,7 +113,7 @@ In `kvdb.h`:
 3. make
    - Release: `make`
    - Debug: `make debug`
-     - This will show `data_t` construct info and `handler return` in `stderr`.
+     - This will show `data_t` construction info and `handler return` in `stderr`.
    - Disable optimization: `make noopt`
 
 
