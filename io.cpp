@@ -59,8 +59,13 @@ void internal_do_resp(int sock, data_t* resp_data, int level) {
     char* str_ptr = NULL;
     uint32 count_be = 0;
 
-    if (!resp_data)
+    if (!resp_data){
+        // write empty obj for null
+        writen(sock, (char*)MAGIC, MAGIC_SIZE);
+        type_be = BigLittleSwap16(DATA_TYPE_EMPTY);
+        writen(sock, (char*)&type_be, sizeof(uint16));
         return;
+    }
     // finishe this!
     type_be = BigLittleSwap16(resp_data->type);
     /* check level */
