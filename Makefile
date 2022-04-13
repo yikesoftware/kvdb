@@ -12,7 +12,7 @@ release: $(OBJS)
 	$(CXX) $(CFLAGS) -o kvdb $^
 	strip -s kvdb
 
-debug: CFLAGS += -g -D DEBUG
+debug: CFLAGS += -g -O0 -D DEBUG
 debug: $(OBJS)
 	$(CXX) $(CFLAGS) -o kvdb $^
 
