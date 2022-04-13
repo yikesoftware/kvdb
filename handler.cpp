@@ -2,6 +2,8 @@
 
 /* Network opcode handlers */
 
+extern uint32 client_fd;
+
 uint32 op_handler_ADD(int sock) {
     data_t* key = read_data_t(sock);
     if (!key) {
@@ -181,6 +183,6 @@ uint32 op_handler_CLR(int sock){
 
 uint32 op_handler_SHUT(int sock) {
     resp_str(sock, "Shutdown Received");
-    shutdown(sock, SHUT_RDWR);
+    close_socket(client_fd);
     exit(0);
 }

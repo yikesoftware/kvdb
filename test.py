@@ -124,5 +124,6 @@ cmd_del(make_int(0x1111))
 p.recv()
 cmd_get(make_int(0x1111))
 p.recv()
+cmd_shut()
 
 p.interactive()

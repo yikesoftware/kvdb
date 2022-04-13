@@ -8,8 +8,9 @@
 
 uint32 socks_server_port = 9999;
 uint32 max_requests = 32;
-uint32 timeout = 0;
-int client_fd;
+uint32 timeout = 64;
+
+uint32 client_fd;
 
 static uint16 accepted_types[] = {DATA_TYPE_EMPTY, DATA_TYPE_INTEGER,
                                   DATA_TYPE_FLOAT, DATA_TYPE_STRING,
@@ -23,17 +24,55 @@ static struct op_handler {
     {OPCODE_MODIFY, op_handler_MDF},    {OPCODE_RENAME, op_handler_RNM},
     {OPCODE_COPY, op_handler_CPY},      {OPCODE_GET, op_handler_GET},
     {OPCODE_SHUTDOWN, op_handler_SHUT}, {OPCODE_DUMP, op_handler_DUMP},
-    {OPCODE_CLEAR, op_handler_CLR}, {OPCODE_TREM, NULL}};
+    {OPCODE_CLEAR, op_handler_CLR},     {OPCODE_TREM, NULL}};
 
 std::list<kvpair> database;
 
-uint32 handle_request(int sock) {
-    /* set timeout */
-    if (timeout) {
-        alarm(timeout);
-        signal(SIGALRM, signal_handler);
-    }
+Data::Data(void) {
+    memset(data, 0, sizeof(data_t));
+    data->type = DATA_TYPE_EMPTY;
+}
 
+Data::Data(data_t* value) {
+    data = copy_data_t(value);
+}
+
+Data::Data(const Data& obj) {
+    data = copy_data_t(obj.get_data_t());
+}
+
+Data::~Data() {
+    release_data_t(data);
+}
+
+uint32 Data::update_data_t(data_t* a) {
+    if (!a)
+        return 1;
+    data_t* old_data_t = data;
+    data = copy_data_t(a);
+    release_data_t(old_data_t);
+    return 0;
+}
+
+uint32 Data::update_data_t(Data& a) {
+    if (!a.get_data_t())
+        return 1;
+    data_t* old_data_t = data;
+    data = copy_data_t(a.get_data_t());
+    release_data_t(old_data_t);
+    return 0;
+}
+
+data_t* Data::get_data_t() const{
+    return data;
+}
+
+/**
+ * Handle a new socket connection by passing a sock fd.
+ * @param (sock) sock fd
+ * @return 0-success other-error
+ */
+uint32 handle_request(int sock) {
     char magic_buf[4] = {0};
     char op_buf[MAX_OP_SIZE + 1] = {0};
     uint16 op_len_be = 0;
@@ -85,12 +124,12 @@ uint32 handle_request(int sock) {
     }
 }
 
-/* sockset server */
 uint32 server_loop() {
     int sock_fd;
     struct sockaddr_in local_addr, client_addr;
     memset(&local_addr, 0, sizeof(local_addr));
-    /* new socket */
+
+    /* new socket (only IPv4 is supported now) */
     if ((sock_fd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
         std::cerr << "server_loop(): Can not create sock_fd!" << std::endl;
         return 1;
@@ -116,7 +155,7 @@ uint32 server_loop() {
         std::cerr << "server_loop(): listen()" << std::endl;
         return 1;
     } else {
-        std::cout << "Listening on port " << socks_server_port << "."
+        std::cout << "Listening on port " << socks_server_port << "..."
                   << std::endl;
     }
 
@@ -130,9 +169,11 @@ uint32 server_loop() {
             std::cerr << "server_loop(): accept()" << std::endl;
             return 1;
         } else {
-            char client_ip[32];
-            inet_ntop(AF_INET, &client_addr.sin_addr.s_addr, client_ip,
-                      sizeof(client_ip));
+            /* get address info */
+            char ip_str[INET_ADDRSTRLEN+1] = {0}; 
+            uint16 port;
+            inet_ntop(AF_INET, &client_addr.sin_addr.s_addr, ip_str, sizeof(ip_str));
+            port = ntohs(client_addr.sin_port);
 
             /* set TCP_NODELAY */
             new_optval = 1;
@@ -143,23 +184,28 @@ uint32 server_loop() {
                         client_fd);
             }
 
-            /* fork to handle it */
+            /* fork process */
             int pid = fork();
             if (pid < 0) {
-                /* fork err, ignore */
                 continue;
             } else {
-                if (pid == 0) {
-                    /* subprocess */
+                if (pid == 0) { // subprocess
                     close(sock_fd);
-                    /* log new request */
-                    printf("New Client - %s:%d (pid: %d)\n", client_ip,
-                           client_addr.sin_port, getpid());
+                    /* set timeout */
+                    if (timeout) {
+                        alarm(timeout);
+                        signal(SIGALRM, signal_handler);
+                    }
+                    
+                    printf("[%d] Connection Established - %s:%d\n", getpid(), ip_str, port);
+
+                    /* handle */
                     int res = handle_request(client_fd);
-                    shutdown(client_fd, SHUT_RDWR);
+
+                    /* normal exit */
+                    close_socket(client_fd);
                     exit(res);
-                } else {
-                    /* main process */
+                } else { // main process 
                     continue;
                 }
             }
@@ -171,12 +217,13 @@ uint32 server_loop() {
 void signal_handler(int sig_num) {
     switch (sig_num) {
         case SIGALRM:
-            printf("[%d] \x1B[31mTimeout!\x1B[0m\n", getpid());
-            shutdown(client_fd, SHUT_RDWR);
+            fprintf(stderr, "[%d] \x1B[31mTimeout!\x1B[0m\n", getpid());
+            close_socket(client_fd);
             exit(0);
         default:
-            printf("[%d] \x1B[31mUnknown signal: %d!\x1B[0m\n", getpid(), sig_num);
-            shutdown(client_fd, SHUT_RDWR);
+            fprintf(stderr, "[%d] \x1B[31mUnknown signal: %d!\x1B[0m\n", getpid(),
+                   sig_num);
+            close_socket(client_fd);
             exit(-1);
     }
 }

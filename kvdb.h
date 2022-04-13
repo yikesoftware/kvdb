@@ -120,6 +120,8 @@ extern void signal_handler(int);
 
 /* IO */
 
+uint32 get_socket_state(int sock);
+void close_socket(int sock);
 extern uint32 readn(int stream, char* buffer, uint32 maxlen);
 extern unsigned int writen(int stream, char* buffer, uint32 maxlen);
 extern data_t* read_data_t(int sock);
@@ -130,47 +132,22 @@ extern void internal_do_resp(int sock, data_t* resp_data, int level);
 
 class Data {
    public:
-    Data() {
-        memset(data, 0, sizeof(data_t));
-        data->type = DATA_TYPE_EMPTY;
-    }
-    /* deepcopy */
-    Data(data_t* value) { data = copy_data_t(value); }
-    Data(const Data& obj) { data = copy_data_t(obj.get_data_t()); }
-
+    Data(void);
+    Data(data_t* value);
+    Data(const Data& obj);
+    ~Data(void);
     Data& operator=(const Data& x) {
         data = copy_data_t(x.get_data_t());
-        /* 这里如果无return的行为可能导致任意地址free */
         return *this;
     }
-
     bool operator==(Data& x) {
         data_t* src = data;
         data_t* dst = x.get_data_t();
         return compare_data_t(dst, src) ? false : true;
     }
-
-    ~Data() { release_data_t(data); }
-
-    uint32 update_data_t(data_t* a) {
-        if (!a)
-            return 1;
-        data_t* old_data_t = data;
-        data = copy_data_t(a);
-        release_data_t(old_data_t);
-        return 0;
-    }
-
-    uint32 update_data_t(const Data& a) {
-        if (!a.get_data_t())
-            return 1;
-        data_t* old_data_t = data;
-        data = copy_data_t(a.get_data_t());
-        release_data_t(old_data_t);
-        return 0;
-    }
-
-    data_t* get_data_t() const { return data; }
+    uint32 update_data_t(data_t* a);
+    uint32 update_data_t(Data& a);
+    data_t* get_data_t() const;
 
    private:
     data_t* data;

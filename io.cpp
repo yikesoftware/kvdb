@@ -1,17 +1,61 @@
 #include "kvdb.h"
 
+extern uint32 client_fd;
+
+uint32 get_socket_state(int sock){
+  struct tcp_info info; 
+  uint32 len = sizeof(info); 
+  getsockopt(sock, IPPROTO_TCP, TCP_INFO, &info, (socklen_t *)&len); 
+  return info.tcpi_state;
+}
+
+void close_socket(int sock){
+    sockaddr_storage storage;
+    socklen_t sock_len = sizeof(storage);
+    char ip_str[INET_ADDRSTRLEN+1] = {0}; 
+    char ip6_str[INET6_ADDRSTRLEN+1] = {0}; 
+    uint16 port;
+
+    int ret = getpeername(sock, (sockaddr*)&storage, &sock_len);  
+    shutdown(sock, SHUT_RDWR);
+ 
+    if(!(ret < 0)){
+        if (storage.ss_family == AF_INET){
+            sockaddr_in* addr = (sockaddr_in* )&storage;
+            inet_ntop(AF_INET, &addr->sin_addr.s_addr, ip_str, sizeof(ip_str));
+            port = ntohs(addr->sin_port);
+            printf("[%d] Connection Closed - %s:%d\n", getpid(), ip_str, port);
+        }
+        /* This code is not used, but must be written... */
+        if(storage.ss_family == AF_INET6){
+            sockaddr_in6* addr = (sockaddr_in6* )&storage;
+            inet_ntop(AF_INET6, &addr->sin6_addr, ip6_str, sizeof(ip6_str));
+            port = ntohs(addr->sin6_port);
+            printf("[%d] Connection Closed - %s:%d\n", getpid(), ip6_str, port);
+        }
+    } else{
+        printf("[%d] Connection Closed.\n", getpid());
+    }
+}
+
 /**
  * Read N bytes to target stream
  * @param (stream) int stream
  * @param (buffer) char* buffer,
  * @param (maxlen) int maxlen
- * @return count
+ * @return read count
  */
 uint32 readn(int stream, char* buffer, uint32 maxlen) {
     uint32 total = 0;
     int rn = 0;
     while (total < maxlen) {
-        if ((rn = read(stream, buffer + total, maxlen - total)) < 0) {
+        rn = read(stream, buffer + total, maxlen - total);
+        if (rn <= 0) {
+            if(stream == client_fd && get_socket_state(stream) != TCP_ESTABLISHED){
+                fprintf(stderr, "[%d] \x1B[33mData stream [READ] interrupted!\x1B[0m\n", getpid());
+                close_socket(stream);
+                exit(-1);
+            }
             return total;
         } else {
             total += rn;
@@ -25,13 +69,19 @@ uint32 readn(int stream, char* buffer, uint32 maxlen) {
  * @param (stream) int stream
  * @param (buffer) char* buffer,
  * @param (maxlen) int maxlen
- * @return count
+ * @return write count
  */
 unsigned int writen(int stream, char* buffer, uint32 maxlen) {
     uint32 total = 0;
     int wn = 0;
     while (total < maxlen) {
-        if ((wn = write(stream, buffer + total, maxlen - total)) < 0) {
+        wn = write(stream, buffer + total, maxlen - total);
+        if (wn <= 0) {
+            if(stream == client_fd && get_socket_state(stream) != TCP_ESTABLISHED){
+                fprintf(stderr, "[%d] \x1B[33mData stream [WRITE] interrupted!\x1B[0m\n", getpid());
+                close_socket(stream);
+                exit(-1);
+            }
             return total;
         } else {
             total += wn;
