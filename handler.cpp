@@ -166,7 +166,6 @@ uint32 op_handler_DUMP(int sock){
         return 1;
     };
     do_resp(sock, dump_array);
-    /* 如果上面dump_data_item发生浅拷贝那这里可以制造UAF首个Free */
     release_data_t(dump_array);
     return 0;
 }

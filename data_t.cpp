@@ -159,9 +159,7 @@ uint32 add_data_item(data_t* key, data_t* value, uint32 overwrite) {
     }
     Data key_obj(key);
     Data value_obj(value);
-    /* maybe shallow copy ? */
     database.push_back(kvpair(key_obj, value_obj));
-    // The destructions of local variables occur here
     return 0;
 }
 
@@ -266,7 +264,6 @@ data_t *dump_data_item(){
         item_array->type = DATA_TYPE_ARRAY;
         item_array->array.count = 2;
         item_array->array.items = (data_t **)calloc(2, sizeof(data_t *));
-        /* 这里可以写成浅拷贝，caller拿到返回值后free一下就可以制造UAF漏洞！ */
         item_array->array.items[0] = copy_data_t(iter->first.get_data_t());
         item_array->array.items[1] = copy_data_t(iter->second.get_data_t());
         dump_array->array.items[i] = item_array;

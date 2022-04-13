@@ -156,7 +156,6 @@ class Data {
         if (!a)
             return 1;
         data_t* old_data_t = data;
-        /* 可以在这里不用copy函数，留个洞 */
         data = copy_data_t(a);
         release_data_t(old_data_t);
         return 0;
@@ -166,7 +165,6 @@ class Data {
         if (!a.get_data_t())
             return 1;
         data_t* old_data_t = data;
-        /* 可以在这里不用copy函数，留个洞 */
         data = copy_data_t(a.get_data_t());
         release_data_t(old_data_t);
         return 0;
