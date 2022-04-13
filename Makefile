@@ -10,6 +10,7 @@ default:release
 release: CFLAGS += -O2
 release: $(OBJS)
 	$(CXX) $(CFLAGS) -o kvdb $^
+	strip -s kvdb
 
 debug: CFLAGS += -g -D DEBUG
 debug: $(OBJS)
