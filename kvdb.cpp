@@ -9,6 +9,7 @@
 uint32 socks_server_port = 9999;
 uint32 max_requests = 32;
 uint32 timeout = 64;
+uint32 run_daemon = 0;
 
 uint32 client_fd;
 
@@ -48,6 +49,28 @@ Data::~Data() {
 uint32 Data::update_data_t(data_t* a) {
     if (!a)
         return 1;
+    data_t * target = a;
+    if(data->type == target->type){
+        switch (target->type)
+        {
+        case DATA_TYPE_INTEGER:
+            data->integer = target->integer;
+            return 0;
+        case DATA_TYPE_FLOAT:
+            data->_float = target->_float;
+            return 0;
+        case DATA_TYPE_STRING:
+            if(target->str.len <= data->str.len){
+                memcpy(data->str.ptr, target->str.ptr, target->str.len);
+                data->str.len = target->str.len;
+                return 0;
+            } else{
+                break;
+            }
+        default:
+            break;
+        }
+    }
     data_t* old_data_t = data;
     data = copy_data_t(a);
     release_data_t(old_data_t);
@@ -57,8 +80,30 @@ uint32 Data::update_data_t(data_t* a) {
 uint32 Data::update_data_t(Data& a) {
     if (!a.get_data_t())
         return 1;
+    data_t * target = a.get_data_t();
+    if(data->type == target->type){
+        switch (target->type)
+        {
+        case DATA_TYPE_INTEGER:
+            data->integer = target->integer;
+            return 0;
+        case DATA_TYPE_FLOAT:
+            data->_float = target->_float;
+            return 0;
+        case DATA_TYPE_STRING:
+            if(target->str.len <= data->str.len){
+                memcpy(data->str.ptr, target->str.ptr, target->str.len);
+                data->str.len = target->str.len;
+                return 0;
+            } else{
+                break;
+            }
+        default:
+            break;
+        }
+    }
     data_t* old_data_t = data;
-    data = copy_data_t(a.get_data_t());
+    data = copy_data_t(target);
     release_data_t(old_data_t);
     return 0;
 }
@@ -206,6 +251,7 @@ uint32 server_loop() {
                     close_socket(client_fd);
                     exit(res);
                 } else { // main process 
+                    close(client_fd);
                     continue;
                 }
             }
@@ -221,9 +267,6 @@ void signal_handler(int sig_num) {
             close_socket(client_fd);
             exit(0);
         default:
-            fprintf(stderr, "[%d] \x1B[31mUnknown signal: %d!\x1B[0m\n", getpid(),
-                   sig_num);
-            close_socket(client_fd);
             exit(-1);
     }
 }
@@ -232,12 +275,13 @@ void prepare() {
     setvbuf(stdin, 0, 2, 0);
     setvbuf(stdout, 0, 2, 0);
     setvbuf(stderr, 0, 2, 0);
+    fclose(stdin);
 }
 
 int main(int argc, char* argv[]) {
     prepare();
     int c;
-    while ((c = getopt(argc, argv, "p:m:t:h")) != -1) {
+    while ((c = getopt(argc, argv, "p:m:t:hd")) != -1) {
         switch (c) {
             case 'p':
                 socks_server_port = atoi(optarg);
@@ -247,6 +291,9 @@ int main(int argc, char* argv[]) {
                 break;
             case 't':
                 timeout = atoi(optarg);
+                break;
+           case 'd':
+                run_daemon = 1;
                 break;
             case 'h':
                 std::cerr
@@ -259,5 +306,24 @@ int main(int argc, char* argv[]) {
         }
     }
     std::cout << "Loading key-value database..." << std::endl;
-    return server_loop();
+
+    if(run_daemon){
+        int pid = fork();
+        if (pid < 0) {
+            fprintf(stderr, "[%d] \x1B[31mDaemon: Fork Error!\x1B[0m\n", getpid());
+            exit(0);
+        } else {
+            if (pid == 0) {
+                fprintf(stderr, "[%d] KVDB service running...\n", getpid());
+                fclose(stdin);
+                fclose(stdout);
+                fclose(stderr);
+                return server_loop();
+            } else { 
+                exit(0);
+            }
+        }
+    } else{
+        return server_loop();
+    }
 }
