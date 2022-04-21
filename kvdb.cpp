@@ -200,8 +200,7 @@ uint32 server_loop() {
         std::cerr << "server_loop(): listen()" << std::endl;
         return 1;
     } else {
-        std::cout << "Listening on port " << socks_server_port << "..."
-                  << std::endl;
+        printf("[%d] Listen on port %d.\n", getpid(), socks_server_port);
     }
 
     socklen_t client_addr_len = sizeof(client_addr);
@@ -278,6 +277,46 @@ void prepare() {
     fclose(stdin);
 }
 
+int init_daemon(){
+        // ignore I/O signal and STOP signal
+        signal(SIGTTOU,SIG_IGN);
+        signal(SIGTTIN,SIG_IGN);
+        signal(SIGTSTP,SIG_IGN);
+        signal(SIGHUP,SIG_IGN);
+
+        // quit parent process
+        int pid = fork();
+        if (pid < 0) {
+            return -1;
+        }
+        if (pid > 0) {
+            exit(0); 
+        }
+
+        // new process group
+        setsid(); 
+
+        // ensure the process is not the process group leader
+        pid = fork();
+        if (pid < 0) {
+            return -1;
+        }
+        if (pid > 0) {
+            exit(0);
+        }
+
+        fprintf(stderr, "[%d] KVDB service started.\n", getpid());
+
+        close(stdin->_fileno);
+        close(stdout->_fileno);
+        close(stderr->_fileno);
+
+        umask(0);
+        signal(SIGCHLD,SIG_IGN);
+
+        return server_loop();
+}
+
 int main(int argc, char* argv[]) {
     prepare();
     int c;
@@ -297,7 +336,7 @@ int main(int argc, char* argv[]) {
                 break;
             case 'h':
                 std::cerr
-                    << "kvdb [-p <port>] [-m <max_clients>] [-t <timeout sec>]"
+                    << "kvdb [-p <port>] [-m <max_clients>] [-t <timeout sec>] [-d]"
                     << std::endl;
                 exit(0);
             case '?':
@@ -308,22 +347,16 @@ int main(int argc, char* argv[]) {
     std::cout << "Loading key-value database..." << std::endl;
 
     if(run_daemon){
-        int pid = fork();
-        if (pid < 0) {
-            fprintf(stderr, "[%d] \x1B[31mDaemon: Fork Error!\x1B[0m\n", getpid());
-            exit(0);
-        } else {
-            if (pid == 0) {
-                fprintf(stderr, "[%d] KVDB service running...\n", getpid());
-                fclose(stdin);
-                fclose(stdout);
-                fclose(stderr);
-                return server_loop();
-            } else { 
-                exit(0);
-            }
-        }
+        init_daemon();
     } else{
-        return server_loop();
+        fprintf(stderr,
+                "[%d] \x1B[33mNotice: Service is running in terminal mode - It "
+                "should only be used for debugging!\x1B[0m\n",
+                getpid());
+        fprintf(stderr,
+                "[%d] \x1B[33mYou can Run with '-d' for daemon mode.\x1B[0m\n",
+                getpid());
     }
+
+    return server_loop();
 }
