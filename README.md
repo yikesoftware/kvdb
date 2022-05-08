@@ -38,25 +38,25 @@ In `kvdb.h`:
 1. Integer data format
 
 ```
-<data_type>|<integer(64 bits)>
+<data_type(16 bits)>|<integer(64 bits)>
 ```
 
 2. Float data format
 
 ```
-<data_type>|<float(64 bits)>
+<data_type(16 bits)>|<float(64 bits)>
 ```
 
 3. String data format (integer, float, string)
 
 ```
-<data_type>|<str_len>|[char(8 bits)]*str_len
+<data_type(16 bits)>|<str_len(32 bits)>|[char(8 bits)]*str_len
 ```
 
 4. Array format
 
 ```
-<data_type>|<counts>|[data]*counts
+<data_type(16 bits)>|<counts(32 bits)>|[data]*counts
 ```
 
 5. Empty data
@@ -79,7 +79,7 @@ In `kvdb.h`:
 ### Clitnt Message Format
 
 ```
-"KVDB"|<op len>|<opcode>|[data]*n
+"KVDB"|<op len(16 bits)>|<opcode>|[data]*n
 ```
 
 > N indicates the number of parameters. Please refer to `supported methods`.
