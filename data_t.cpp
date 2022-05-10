@@ -41,6 +41,9 @@ uint32 release_data_t(data_t* data) {
  * @return pointer to new data_t obj
  */
 data_t* copy_data_t(data_t* data) {
+    if(!data){
+        return NULL;
+    }
     data_t* tmp = (data_t*)calloc(1, sizeof(data_t));
     if (!tmp)
         return NULL;
@@ -137,6 +140,9 @@ uint32 compare_data_t(data_t* dst, data_t* src) {
  * @return pointer to string type data_t obj
  */
 data_t* make_string(const char* str) {
+    if(!str){
+        return NULL;
+    }
     data_t* tmp = (data_t*)calloc(1, sizeof(data_t));
     if (!tmp)
         return NULL;
