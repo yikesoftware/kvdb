@@ -6,6 +6,9 @@
  * @return 0-success other-error
  */
 uint32 release_data_t(data_t* data) {
+    if(!data){
+        return ~0;
+    }
     switch (data->type) {
         case DATA_TYPE_EMPTY:
         case DATA_TYPE_INTEGER:

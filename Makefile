@@ -1,8 +1,8 @@
 SHELL = /bin/sh
 CFLAGS := 
 
-CC = gcc
-CXX = g++
+CC = afl-gcc-fast
+CXX = afl-g++-fast
 OBJS = kvdb.o io.o handler.o data_t.o
 
 default:release

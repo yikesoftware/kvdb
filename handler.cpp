@@ -112,7 +112,7 @@ uint32 op_handler_CPY(int sock) {
     data_t* dst_key = read_data_t(sock);
     if (!dst_key) {
         resp_str(sock, "Dst Key Error");
-        release_data_t(dst_key);
+        release_data_t(src_key);
         return 1;
     }
     /* check dup */
