@@ -1,8 +1,8 @@
 SHELL = /bin/sh
 CFLAGS := 
 
-CC = afl-gcc-fast
-CXX = afl-g++-fast
+CC = gcc
+CXX = g++
 OBJS = kvdb.o io.o handler.o data_t.o
 
 default:release
@@ -18,6 +18,14 @@ debug: $(OBJS)
 
 noopt: CFLAGS += -O0
 noopt: $(OBJS)
+	$(CXX) $(CFLAGS) -o kvdb $^
+
+asan: CFLAGS += -g -fsanitize=address -fsanitize-recover=address -fno-omit-frame-pointer
+asan: $(OBJS)
+	$(CXX) $(CFLAGS) -o kvdb.asan $^
+	
+afl: CXX = afl-g++-fast
+afl: $(OBJS)
 	$(CXX) $(CFLAGS) -o kvdb $^
 
 %.o: %.cpp
