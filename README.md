@@ -4,6 +4,8 @@ A CTF challenge for miniLCTF 2022：[Repo](https://github.com/XDSEC/miniLCTF_202
 
 > Easy key-value database written in `C/C++` language.
 
+# Doc
+
 ## 0x00 Opcodes
 
 - `ADD`: Add a new kvpair to database.
