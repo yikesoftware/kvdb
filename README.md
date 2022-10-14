@@ -1,8 +1,8 @@
-# A key-value database
+# A key-value database (For miniLCTF 2022)
 
-An easy key-value database written in `C/C++` language.
+A CTF challenge for miniLCTF 2022：[Repo](https://github.com/XDSEC/miniLCTF_2022/tree/main/Challenges/kvdb)
 
-> Just for fun~
+> Easy key-value database written in `C/C++` language.
 
 ## 0x00 Opcodes
 
