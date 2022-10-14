@@ -1,6 +1,6 @@
 # A key-value database (For miniLCTF 2022)
 
-A CTF challenge for miniLCTF 2022：[Repo](https://github.com/XDSEC/miniLCTF_2022/tree/main/Challenges/kvdb)
+A CTF challenge for miniLCTF 2022：[https://github.com/XDSEC/miniLCTF_2022/tree/main/Challenges/kvdb](https://github.com/XDSEC/miniLCTF_2022/tree/main/Challenges/kvdb)
 
 > Easy key-value database written in `C/C++` language.
 
